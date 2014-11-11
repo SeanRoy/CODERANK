@@ -74,9 +74,7 @@ public class WorkExperience
 	public static final DateFormat format = new SimpleDateFormat( "MMM yyyy");
 	public static long calculate( String [] exp ) throws Exception
 	{
-		int i = 0;
-		
-		Exp [] array = new Exp[exp.length];
+		boolean [] calendar = new boolean [360];
 		
 		for( String s : exp )
 		{
@@ -87,46 +85,26 @@ public class WorkExperience
 			Date start = (Date) format.parseObject(startAndEnd[0]);
 			Date end = (Date) format.parseObject(startAndEnd[1]);
 			
-			Calendar endCal = Calendar.getInstance();
-			endCal.setTime(end);
-			endCal.set(Calendar.DAY_OF_MONTH, endCal.getActualMaximum(Calendar.DAY_OF_MONTH));
-			end = endCal.getTime();
+			int startIndex = 12 * (start.getYear() - 90) + start.getMonth();
+			int endIndex = 12 * (end.getYear() - 90) + end.getMonth();
 			
-			array[i++] = new Exp(start, end);
+			for( ; startIndex <= endIndex; startIndex++ )
+			{
+				calendar[startIndex] = true;
+			}
 		}
 		
-		Arrays.sort(array);
+		int x = 0;
 		
-		long sum = 0;
-		
-		Exp start = array[0];
-		Exp end = array[0];
-		
-		for( i = 1; i < array.length; i++ )
+		for( boolean b : calendar )
 		{
-			if ( array[i].getStartTime() < start.getEndTime() )
+			if ( b )
 			{
-				if ( start.getEndTime() > array[i].getEndTime() )
-				{
-					end = start;
-				}
-				else
-				{
-					end = array[i];
-				}
-			}
-			else
-			{
-				sum += end.getEndTime() - start.getStartTime();
-			
-				start = array[i];
-				end = array[i];
+				x++;
 			}
 		}
 		
-		sum += end.getEndTime() - start.getStartTime();
-				
-		return ( sum / 1000 ) / ( 60 * 60 * 24 * 365 );
+		return x / 12;
 	}
 	public static void main(String [] args)
 	{
