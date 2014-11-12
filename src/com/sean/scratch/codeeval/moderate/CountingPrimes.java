@@ -5,6 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ * https://www.codeeval.com/open_challenges/63/
+ * @author Sean
+ *
+ */
 public class CountingPrimes
 {
 	// Sieve of Eratosthenes
