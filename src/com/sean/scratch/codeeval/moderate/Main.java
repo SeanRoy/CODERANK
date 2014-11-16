@@ -1,12 +1,47 @@
-package com.sean.scratch.codeeval;
+package com.sean.scratch.codeeval.moderate;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 
+/**
+ * https://www.codeeval.com/open_challenges/119/
+ * @author Sean
+ *
+ */
 public class Main
 {
+	public static String chain(String [] pieces)
+	{
+		int visited = 0;
+		
+		HashMap<String,String> map = new HashMap<String,String>();
+		
+		for( String piece : pieces )
+		{
+			String [] leftAndRight = piece.split("-");
+			
+			map.put(leftAndRight[0], leftAndRight[1]);
+		}
+		
+		String value = map.get("BEGIN");
+		
+		while( value != null && visited <= pieces.length)
+		{
+			value = map.get(value);
+			
+			visited++;
+		}
+		
+		if ( visited == pieces.length )
+		{
+			return "GOOD";
+		}
+		
+		return "BAD";
+	}
 	public static void main(String [] args)
 	{
 		if ( args.length >= 1 )
@@ -25,7 +60,8 @@ public class Main
 				{
 					if ( ! line.equals( "" ) )
 					{
-						
+						String [] pieces = line.split(";");
+						System.out.println(Main.chain(pieces));
 					}
 				}
 			}

@@ -1,11 +1,11 @@
-package com.sean.scratch.codeeval;
+package com.sean.scratch.codeeval.moderate;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class Main
+public class DOUBLEDIGITS
 {
 	public static void main(String [] args)
 	{
@@ -25,7 +25,26 @@ public class Main
 				{
 					if ( ! line.equals( "" ) )
 					{
+						int sum = 0;
 						
+						char [] arr = line.toCharArray();
+						
+						for( int i = 0; i < arr.length - 1; i++ )
+						{
+							if ( ( int ) ( arr[i] - '0' ) > 0 )
+							{
+								sum++;
+							}
+							
+							int doubleDigitVal = ( (int) arr[i] - '0' + (int) arr[i+1] - '0' );
+							
+							if ( doubleDigitVal > 0 && doubleDigitVal < 27 )
+							{
+								sum++;
+							}
+						}
+						
+						System.out.println(sum);
 					}
 				}
 			}
