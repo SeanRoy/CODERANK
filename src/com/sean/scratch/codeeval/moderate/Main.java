@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 /**
- * https://www.codeeval.com/open_challenges/119/
+ * 
  * @author Sean
  *
  */
@@ -35,12 +35,7 @@ public class Main
 			visited++;
 		}
 		
-		if ( visited == pieces.length )
-		{
-			return "GOOD";
-		}
-		
-		return "BAD";
+		return visited == pieces.length ? "GOOD" : "BAD";
 	}
 	public static void main(String [] args)
 	{
