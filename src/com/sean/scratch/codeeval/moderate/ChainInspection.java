@@ -11,7 +11,7 @@ import java.util.HashMap;
  * @author Sean
  *
  */
-public class Main
+public class ChainInspection
 {
 	public static String chain(String [] pieces)
 	{
@@ -56,7 +56,7 @@ public class Main
 					if ( ! line.equals( "" ) )
 					{
 						String [] pieces = line.split(";");
-						System.out.println(Main.chain(pieces));
+						System.out.println(ChainInspection.chain(pieces));
 					}
 				}
 			}
