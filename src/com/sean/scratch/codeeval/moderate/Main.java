@@ -97,13 +97,22 @@ public class Main
 			StringBuilder b = new StringBuilder();
 			
 			if ( left != null )
-				b.append(left.toString());
+				b.append(left.toString() + " ");
 			if ( right != null )
-				b.append(right.toString());
+				b.append(right.toString() + " ");
 			if ( value != null )
-				b.append(value);
+				b.append(value + " ");
 			
 			return b.toString();
+		}
+		
+		public boolean equals(Object obj)
+		{
+			if ( obj == null || ! (obj instanceof Node) )
+			{
+				return false;
+			}
+			return ( ( Node) obj ).id == this.id;
 		}
 	}
 	
@@ -274,6 +283,8 @@ public class Main
 						{
 							root = root.getParent(false);
 						}
+						
+						System.out.println(root);
 						
 						double d = Main.calculate(root);
 						
