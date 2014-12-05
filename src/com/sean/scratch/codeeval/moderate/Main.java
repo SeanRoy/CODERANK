@@ -135,9 +135,6 @@ public class Main
 		{	
 			double result = 0;
 			
-			double left = 0;
-			double right = 0;
-			
 			if ( n != null )
 			{
 				if ( n.getValue() != null )
@@ -299,7 +296,7 @@ public class Main
 				bReader = new BufferedReader(new FileReader(fileName) );
 				
 				String line = null;
-				
+				//int i = 0;
 				while( ( line = bReader.readLine() ) != null )
 				{
 					if ( ! line.equals( "" ) )
@@ -311,11 +308,16 @@ public class Main
 							root = root.getParent(false);
 						}
 						
+						//System.out.print(++i + " ");
 						//System.out.println(root);
 						
 						double d = root.calculate();
 						
-						if ( d == (int) d)
+						if ( d == Double.POSITIVE_INFINITY || d == Double.NEGATIVE_INFINITY )
+						{
+							System.out.println("Infinity");
+						}
+						else if ( d == (int) d)
 						{
 							System.out.println((int) d);
 						}
