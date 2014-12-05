@@ -5,10 +5,20 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 
 
 public class Main
 {
+	public static final HashMap<Character,Integer> precedence = new HashMap<Character,Integer>();
+	static
+	{
+		precedence.put('^', 10);
+		precedence.put('*', 9);
+		precedence.put('/', 9);
+		precedence.put('+', 8);
+		precedence.put('-', 8);
+	};
 	public static class Node
 	{
 		private static int total = 0;
@@ -36,7 +46,8 @@ public class Main
 		}
 		public void setRight(Node right)
 		{
-			right.setParent(this);
+			if ( right != null )
+				right.setParent(this);
 			this.right = right;
 		}
 		public Node getLeft()
@@ -62,7 +73,8 @@ public class Main
 		}
 		public void setLeft(Node left)
 		{
-			left.setParent(this);
+			if ( left != null )
+				left.setParent(this);
 			this.left = left;
 		}
 		public String getValue()
@@ -114,54 +126,60 @@ public class Main
 			}
 			return ( ( Node) obj ).id == this.id;
 		}
-	}
-	
-	public static double calculate( Node n )
-	{	
-		double result = 0;
 		
-		double left = 0;
-		double right = 0;
-		
-		if ( n != null )
+		public double calculate()
 		{
-			if ( n.getValue() != null )
+			return calculate(this);
+		}
+		private static double calculate( Node n )
+		{	
+			double result = 0;
+			
+			double left = 0;
+			double right = 0;
+			
+			if ( n != null )
 			{
-				switch( n.getValue() )
+				if ( n.getValue() != null )
 				{
-					case "+":
-						result = calculate(n.getLeft(false)) + calculate(n.getRight(false));
-						break;
-					case "-":
-						result = calculate(n.getLeft(false)) - calculate(n.getRight(false));
-						break;
-					case "*":
-						result = calculate(n.getLeft(false)) * calculate(n.getRight(false));
-						break;
-					case "/":
-						result = calculate(n.getLeft(false)) / calculate(n.getRight(false));
-						break;	
-					case "^":
-						result = Math.pow(calculate(n.getLeft(false)), calculate(n.getRight(false)));
-						break;
-					default:
-						if ( n.getValue() != null )
-							result = Double.parseDouble(n.getValue());
-						break;
+					switch( n.getValue() )
+					{
+						case "+":
+							result = calculate(n.getLeft(false)) + calculate(n.getRight(false));
+							break;
+						case "-":
+							result = calculate(n.getLeft(false)) - calculate(n.getRight(false));
+							break;
+						case "*":
+							result = calculate(n.getLeft(false)) * calculate(n.getRight(false));
+							break;
+						case "/":
+							result = calculate(n.getLeft(false)) / calculate(n.getRight(false));
+							break;	
+						case "^":
+							result = Math.pow(calculate(n.getLeft(false)), calculate(n.getRight(false)));
+							break;
+						default:
+							if ( n.getValue() != null )
+								result = Double.parseDouble(n.getValue());
+							break;
+					}
+				}
+				else if ( n.getLeft(false) != null )
+				{
+					result = calculate(n.getLeft(false));
+				}
+				else if ( n.getRight(false) != null )
+				{
+					result = calculate(n.getRight(false));
 				}
 			}
-			else if ( n.getLeft(false) != null )
-			{
-				result = calculate(n.getLeft(false));
-			}
-			else if ( n.getRight(false) != null )
-			{
-				result = calculate(n.getRight(false));
-			}
-		}
 
-		return result;
+			return result;
+		}
 	}
+	
+	
 	
 	public static Node load(String line)
 	{
@@ -190,6 +208,16 @@ public class Main
 					break;
 				case ')':
 					current = current.getParent();
+					
+					while( current.getValue() != null )
+					{
+						current = current.getParent();
+					}
+					
+					current.setValue("" + current.calculate());
+					current.setLeft(null);
+					current.setRight(null);
+					current = current.getParent();
 					break;
 				case '+': case '-': case '/': case '*': case '^':
 					if ( c == '-' && ("" + c).matches("\\d+") )
@@ -201,18 +229,17 @@ public class Main
 						if ( current.getValue() != null )
 						{
 							Node n = new Node();
-							if ( current.parent != null )
-							{
-								if ( current.getParent().getLeft() == current )
-								{
-									current.getParent().setLeft(n);
-								}
-								else
-								{
-									current.getParent().setRight(n);
-								}
+							
+							if ( precedence.get(c) <= precedence.get(current.getValue().toCharArray()[0]))
+							{	
+								n.setLeft(current);
 							}
-							n.setLeft(current);
+							else
+							{
+								n.setLeft(current.getRight());
+								current.setRight(n);
+							}
+							
 							current = n;
 						}
 						
@@ -284,9 +311,9 @@ public class Main
 							root = root.getParent(false);
 						}
 						
-						System.out.println(root);
+						//System.out.println(root);
 						
-						double d = Main.calculate(root);
+						double d = root.calculate();
 						
 						if ( d == (int) d)
 						{
