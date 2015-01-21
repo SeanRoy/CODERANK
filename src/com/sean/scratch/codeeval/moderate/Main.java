@@ -4,285 +4,189 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.HashMap;
-
+import java.util.BitSet;
 
 public class Main
 {
-	public static final HashMap<Character,Integer> precedence = new HashMap<Character,Integer>();
-	static
-	{
-		precedence.put('^', 10);
-		precedence.put('*', 9);
-		precedence.put('/', 9);
-		precedence.put('+', 8);
-		precedence.put('-', 8);
-	};
-	public static class Node
-	{
-		private static int total = 0;
-		private Node parent;
-		private Node right;
-		private Node left;
-		private String value = null;
-		private int id = 0;
-		
-		public Node()
-		{
-			id = ++total;
-		}
-		public Node getRight()
-		{
-			return getRight(true);
-		}
-		public Node getRight(boolean create)
-		{
-			if ( create && right == null )
-			{
-				setRight(new Node());
-			}
-			return right;
-		}
-		public void setRight(Node right)
-		{
-			if ( right != null )
-				right.setParent(this);
-			this.right = right;
-		}
-		public Node getLeft()
-		{
-			return getLeft(true);
-		}
-		public Node getLeft(boolean create)
-		{
-			if ( create && left == null )
-			{
-				setLeft(new Node());
-			}
-			
-			return left;
-		}
-		public boolean leftNull()
-		{
-			return left == null;
-		}
-		public boolean rightNull()
-		{
-			return right == null;
-		}
-		public void setLeft(Node left)
-		{
-			if ( left != null )
-				left.setParent(this);
-			this.left = left;
-		}
-		public String getValue()
-		{
-			return value;
-		}
-		public void setValue(String value)
-		{
-			this.value = value;
-		}	
-		public void setParent(Node p)
-		{
-			this.parent = p;
-		}
-		public Node getParent()
-		{
-			return getParent(true);
-		}
-		public Node getParent(boolean create)
-		{
-			if (create && parent == null )
-			{
-				Node n = new Node();
-				n.setLeft(this);
-				parent = n;
-			}
-			return parent;
-		}
-		
-		public String toString()
-		{
-			StringBuilder b = new StringBuilder();
-			
-			if ( left != null )
-				b.append(left.toString() + " ");
-			if ( right != null )
-				b.append(right.toString() + " ");
-			if ( value != null )
-				b.append(value + " ");
-			
-			return b.toString();
-		}
-		
-		public boolean equals(Object obj)
-		{
-			if ( obj == null || ! (obj instanceof Node) )
-			{
-				return false;
-			}
-			return ( ( Node) obj ).id == this.id;
-		}
-		
-		public double calculate()
-		{
-			return calculate(this);
-		}
-		private static double calculate( Node n )
-		{	
-			double result = 0;
-			
-			if ( n != null )
-			{
-				if ( n.getValue() != null )
-				{
-					switch( n.getValue() )
-					{
-						case "+":
-							result = calculate(n.getLeft(false)) + calculate(n.getRight(false));
-							break;
-						case "-":
-							result = calculate(n.getLeft(false)) - calculate(n.getRight(false));
-							break;
-						case "*":
-							result = calculate(n.getLeft(false)) * calculate(n.getRight(false));
-							break;
-						case "/":
-							result = calculate(n.getLeft(false)) / calculate(n.getRight(false));
-							break;	
-						case "^":
-							result = Math.pow(calculate(n.getLeft(false)), calculate(n.getRight(false)));
-							break;
-						default:
-							if ( n.getValue() != null )
-								result = Double.parseDouble(n.getValue());
-							break;
-					}
-				}
-				else if ( n.getLeft(false) != null )
-				{
-					result = calculate(n.getLeft(false));
-				}
-				else if ( n.getRight(false) != null )
-				{
-					result = calculate(n.getRight(false));
-				}
-			}
-
-			return result;
-		}
-	}
+	/*
+	private static final BitSet ZERO = new BitSet(8);
+	private static final BitSet ONE = new BitSet(8);
+	private static final BitSet TWO = new BitSet(8);
+	private static final BitSet THREE = new BitSet(8);
+	private static final BitSet FOUR = new BitSet(8);
+	private static final BitSet FIVE = new BitSet(8);
+	private static final BitSet SIX = new BitSet(8);
+	private static final BitSet SEVEN = new BitSet(8);
+	private static final BitSet EIGHT = new BitSet(8);
+	private static final BitSet NINE = new BitSet(8);
+	private static final BitSet DEC = new BitSet(8);
+	*/
+	
+	// ZERO = 1111 1100
+	private static final int ZERO = 0xFC;
+	// ONE = 0110 0000
+	private static final int ONE = 0x60;
+	// TWO = 1101 1010
+	private static final int TWO = 0xDA;
+	// THREE = 1101 0010
+	private static final int THREE = 0xF2;
+	// FOUR = 0110 0110
+	private static final int FOUR = 0x66;
+	// FIVE = 1011 0110
+	private static final int FIVE = 0xB6;
+	// SIX = 1011 1110
+	private static final int SIX = 0xBE;
+	// SEVEN = 1110 0000
+	private static final int SEVEN = 0xE0;
+	// EIGHT = 1111 1110
+	private static final int EIGHT = 0xFE;
+	// NINE = 1111 0111
+	private static final int NINE = 0xF7;
+	// DEC = 0000 0001
+	private static final int DEC = 0x01;
 	
 	
 	
-	public static Node load(String line)
-	{
-		Node current = new Node();
+	/**
+	 *  ***
+	 * *   *
+	 * *   *
+	 *  ***
+	 * *   *
+	 * *   *
+	 *  ***
+	 *  0000 0000
+	 * @param number
+	 * @return
+	 */
+	public static void printNumber(int num)
+	{	
+		boolean space = false;
 		
-		char [] cs = line.toCharArray();
-		
-		boolean MINUS = false;
-		
-		for ( int i = 0; i < cs.length; i++ )
+		// 0
+		if ( (num & 0x80) > 0 )
 		{
-			char c = cs[i];
+			System.out.println(" *** ");
+		}
+		
+		// 5
+		if ( ( num & 0x04 ) > 0 )
+		{
+			System.out.print("*");
 			
-			switch(c)
+			space = true;
+		}
+		
+		// 1
+		if ( (num & 0x40 ) > 0 )
+		{
+			if ( !space )
 			{
-				case '(':					
-					if (current.leftNull())
-					{
-						current = current.getLeft();
-					}
-					else
-					{
-						current = current.getRight();
-					}
+				System.out.print(" ");
+			}
+			space = false;
+			
+			System.out.print("   *");
+		}
+		
+		System.out.println();
+		
+		// 5
+		if ( ( num & 0x04 ) > 0 )
+		{
+			System.out.print("*");
+			
+			space = true;
+		}
+		
+		// 1
+		if ( (num & 0x40 ) > 0 )
+		{
+			if ( !space )
+			{
+				System.out.print(" ");
+			}
+			space = false;
+			
+			System.out.print("   *");
+		}
+		
+		System.out.println();
+		
+		// 6
+		if ( ( num & 0x02 ) > 0 )
+		{
+			System.out.println( " *** " );
+		}
+		
+		// 4
+		if ( ( num & 0x08 ) > 0 )
+		{
+			space = true;
+			System.out.print( "*" );
+		}
+		
+		// 2
+		if ( ( num & 0x20 ) > 0 )
+		{
+			if ( !space )
+			{
+				System.out.print(" ");
 				
-					break;
-				case ')':
-					current = current.getParent();
-					
-					while( current.getValue() != null )
-					{
-						current = current.getParent();
-					}
-					
-					current.setValue("" + current.calculate());
-					current.setLeft(null);
-					current.setRight(null);
-					current = current.getParent();
-					break;
-				case '+': case '-': case '/': case '*': case '^':
-					if ( c == '-' && ("" + c).matches("\\d+") )
-					{
-						MINUS = true;
-					}
-					else 
-					{
-						if ( current.getValue() != null )
-						{
-							Node n = new Node();
-							
-							if ( precedence.get(c) <= precedence.get(current.getValue().toCharArray()[0]))
-							{	
-								n.setLeft(current);
-							}
-							else
-							{
-								n.setLeft(current.getRight());
-								current.setRight(n);
-							}
-							
-							current = n;
-						}
-						
-						current.setValue("" + c);
-						
-						current = current.getRight();
-					}
-
-					break;
-				default:
-					
-					if ( ("" + c).matches("[\\d+|\\.]") )
-					{
-						StringBuilder s = new StringBuilder();
-						
-						if ( MINUS )
-						{
-							s.append("-");
-							MINUS = false;
-						}
-						
-						while( ("" + c).matches("[\\d+|\\.]") )
-						{
-							s.append(c);
-							
-							if ( i + 1 < cs.length && ("" + cs[i + 1]).matches("[\\d+|\\.]") )
-							{
-								c = cs[++i];
-							}
-							else
-							{
-								break;
-							}
-						}
-						
-						
-						current.setValue(s.toString());
-						current = current.getParent();
-					}
-					
-					break;
 			}
+			space = false;
+			System.out.print("   *");
 		}
 		
-		return current;
+		System.out.println();
+		
+		// 4
+		if ( ( num & 0x08 ) > 0 )
+		{
+			space = true;
+			System.out.print( "*" );
+		}
+		
+		// 2 
+		if ( ( num & 0x20 ) > 0 )
+		{
+			if ( !space )
+			{
+				System.out.print(" ");				
+			}
+			space = false;
+			System.out.print("   *");
+		}
+		
+		System.out.println();
+		
+		// 3
+		if ( ( num & 0x10 ) > 0 )
+		{
+			System.out.println(" *** ");
+		}
+		
+		
+		// .
+		if ( ( num & 0x01 ) > 0 )
+		{
+			System.out.println("    *");
+		}
+		
+		System.out.println();
 	}
+	
+	
+	public static BitSet convert(String bits)
+	{
+		BitSet b = new BitSet(8);
+		
+		
+		
+		
+		return b;
+	}
+	
 	public static void main(String [] args)
 	{
 		if ( args.length >= 1 )
@@ -291,40 +195,30 @@ public class Main
 			
 			BufferedReader bReader = null;
 			
+			Main.printNumber(ZERO);
+			Main.printNumber(ONE);
+			Main.printNumber(TWO);
+			Main.printNumber(THREE);
+			Main.printNumber(FOUR);
+			Main.printNumber(FIVE);
+			Main.printNumber(SIX);
+			Main.printNumber(SEVEN);
+			Main.printNumber(EIGHT);
+			Main.printNumber(NINE);
+			Main.printNumber(DEC);
+			
 			try
 			{
 				bReader = new BufferedReader(new FileReader(fileName) );
 				
 				String line = null;
-				//int i = 0;
+				
 				while( ( line = bReader.readLine() ) != null )
 				{
 					if ( ! line.equals( "" ) )
 					{
-						Node root = Main.load( line );
 						
-						while( root.getParent(false) != null )
-						{
-							root = root.getParent(false);
-						}
-						
-						//System.out.print(++i + " ");
-						//System.out.println(root);
-						
-						double d = root.calculate();
-						
-						if ( d == Double.POSITIVE_INFINITY || d == Double.NEGATIVE_INFINITY )
-						{
-							System.out.println("Infinity");
-						}
-						else if ( d == (int) d)
-						{
-							System.out.println((int) d);
-						}
-						else
-						{
-							System.out.println(new DecimalFormat("#.#####").format(d) );
-						}
+						//System.out.println();
 					}
 				}
 			}
