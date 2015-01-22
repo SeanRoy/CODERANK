@@ -40,8 +40,8 @@ public class Main
 	private static final int SEVEN = 0xE0;
 	// EIGHT = 1111 1110
 	private static final int EIGHT = 0xFE;
-	// NINE = 1111 0111
-	private static final int NINE = 0xF7;
+	// NINE = 1111 0110
+	private static final int NINE = 0xF6;
 	// DEC = 0000 0001
 	private static final int DEC = 0x01;
 	
@@ -181,10 +181,28 @@ public class Main
 	{
 		BitSet b = new BitSet(8);
 		
-		
-		
-		
 		return b;
+	}
+	
+	public static boolean possible( int start, int [] segmentStates, String number)
+	{
+return false;
+	}
+	
+	public static int possible(int [] segmentStates, String number)
+	{
+		int ret = 0;
+		
+		int length = number.length();
+		
+		if ( number.contains(".") )
+		{
+			length--;
+		}
+		 
+		int start = 12 - length;
+		
+		return ret;
 	}
 	
 	public static void main(String [] args)
@@ -194,18 +212,6 @@ public class Main
 			String fileName = args[0];
 			
 			BufferedReader bReader = null;
-			
-			Main.printNumber(ZERO);
-			Main.printNumber(ONE);
-			Main.printNumber(TWO);
-			Main.printNumber(THREE);
-			Main.printNumber(FOUR);
-			Main.printNumber(FIVE);
-			Main.printNumber(SIX);
-			Main.printNumber(SEVEN);
-			Main.printNumber(EIGHT);
-			Main.printNumber(NINE);
-			Main.printNumber(DEC);
 			
 			try
 			{
@@ -217,8 +223,19 @@ public class Main
 				{
 					if ( ! line.equals( "" ) )
 					{
+						String [] pieces = line.split(";");
+						String number = pieces[1];
 						
-						//System.out.println();
+						String [] segmentStatesStrings = pieces[0].split("\\s+");
+						
+						int [] segmentStates = new int[ segmentStatesStrings.length ];
+						
+						for( int i = 0; i < segmentStatesStrings.length; i++ )
+						{
+							segmentStates[i] = Integer.parseInt(segmentStatesStrings[i], 2);
+						}
+						
+						System.out.println(Main.possible(segmentStates, number));
 					}
 				}
 			}
