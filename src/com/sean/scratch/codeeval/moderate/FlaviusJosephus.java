@@ -4,40 +4,42 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
-public class Main
+public class FlaviusJosephus
 {
-	public static int findPath(ArrayList<int []> tree, int row, int col)
+	public static String execute(int n, int m)
 	{
-		int sum = 0;
+		boolean [] executed = new boolean[ n ];
 		
-		for( ; row < tree.size(); row++ )
+		StringBuilder sb = new StringBuilder();
+		
+		int dead = 0;
+		int i = -1;
+		
+		while( dead < n )
 		{
-			int [] numbers = tree.get(row);
-			
-			sum += numbers[col];
-			
-			if ( row < tree.size() - 1 )
+			int x = 0;
+			while( x < m )
 			{
-				int left = findPath(tree, row + 1, col);
-				int right = findPath(tree, row + 1, col + 1);
+				i = (i + 1) % n;
 				
-				if ( right > left )
+				if ( !executed[i] )
 				{
-					col++;
+					x++;
 				}
-				else if ( right == left )
-				{
-					if ( right > left )
-					{
-						col++;
-					}
-				}
+			}
+			
+			executed[i] = true;
+			sb.append(i);
+			dead++;
+			
+			if ( dead < n )
+			{
+				sb.append(" ");
 			}
 		}
 		
-		return sum;
+		return sb.toString();
 	}
 	public static void main(String [] args)
 	{
@@ -53,23 +55,16 @@ public class Main
 				
 				String line = null;
 				
-				ArrayList<int []> tree = new ArrayList<int[]>();
-				
 				while( ( line = bReader.readLine() ) != null )
 				{
-					String [] pieces = line.split("\\s+");
-					int [] numbers = new int[ pieces.length];
-					
-					int i = 0;
-					for( String s : pieces )
+					if ( ! line.equals( "" ) )
 					{
-						numbers[i++] = Integer.parseInt(s);
+						String [] pieces = line.split(",");
+						
+						System.out.println(FlaviusJosephus.execute(Integer.parseInt(pieces[0]), 
+								                        Integer.parseInt(pieces[1])));
 					}
-					
-					tree.add(numbers);
 				}
-				
-				System.out.println(Main.findPath(tree, 0, 0));
 			}
 			catch(FileNotFoundException fnfe)
 			{
