@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+/*
 package com.sean.scratch.codeeval.moderate;
 
 import java.io.BufferedReader;
@@ -7,7 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Main
+public class PrintedDigits
 {
 	public static int findPath(ArrayList<int []> tree, int row, int col)
 	{
@@ -101,7 +101,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.BitSet;
 
-public class Main
+public class PrintedDigits
 {
 	/*
 	private static final BitSet ZERO = new BitSet(8);
@@ -115,7 +115,7 @@ public class Main
 	private static final BitSet EIGHT = new BitSet(8);
 	private static final BitSet NINE = new BitSet(8);
 	private static final BitSet DEC = new BitSet(8);
-	*/
+	
 	
 	// ZERO = 1111 1100
 	private static final int ZERO = 0xFC;
@@ -142,7 +142,7 @@ public class Main
 	
 	
 	
-	/**
+	*//**
 	 *  ***
 	 * *   *
 	 * *   *
@@ -153,7 +153,7 @@ public class Main
 	 *  0000 0000
 	 * @param number
 	 * @return
-	 */
+	 *//*
 	public static void printNumber(int num)
 	{	
 		boolean space = false;
@@ -354,4 +354,4 @@ return false;
 
 	}
 }
->>>>>>> branch 'master' of https://github.com/SeanRoy/CODERANK.git
+*/
